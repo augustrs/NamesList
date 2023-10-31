@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -5,19 +9,21 @@ public class NamesList {
 
     private ArrayList<String> names;
 
+
     public NamesList() {
         names = new ArrayList<>();
     }
 
-    public void startUserInterface() {
+    public void startUserInterface()  {
         System.out.println("""
                 Welcome to the NamesList - enterprise edition.
                 ----------------------------------------------
                 """);
 
+
         Scanner sc = new Scanner(System.in);
         int choice = 99;
-        while( choice != 0) {
+        while (choice != 0) {
             showMenu();
             choice = sc.nextInt();
             switch (choice) {
@@ -35,8 +41,8 @@ public class NamesList {
     private void showMenu() {
         System.out.println("""
                 1) Display list of names
-                2) Load list of names (not implemented)
-                3) Save list of names (not implemented)
+                2) Load list of names
+                3) Save list of names
                 4) Enter names
                 0) Exit
                 """);
@@ -50,9 +56,9 @@ public class NamesList {
                 """);
         Scanner sc = new Scanner(System.in);
         String name = "-nothing yet-";
-        while(!name.isBlank() && sc.hasNextLine()) {
+        while (!name.isBlank() && sc.hasNextLine()) {
             name = sc.nextLine();
-            if(!name.isBlank()) {
+            if (!name.isBlank()) {
                 names.add(name);
                 System.out.println(name + " added to the list, enter another, or empty to quit");
             }
@@ -61,26 +67,75 @@ public class NamesList {
     }
 
     private void saveListOfNames() {
-        // TODO: Implement save of the names list to a file
-        System.out.println("NOT IMPLEMENTED");
-    }
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the filename you want to save to: ");
+        String filename = scanner.nextLine().trim();
+        try {
+            PrintStream output = new PrintStream(new File(filename));
 
+            for (String name : names) {
+
+                output.println(name);
+            }
+            loadingtext("Saving");
+
+            System.out.println(names.size() + " names saved to names.txt");
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+            saveListOfNames();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private void loadingtext(String nameOrLoading) throws InterruptedException {
+        System.out.print(nameOrLoading);
+        Thread.sleep(500);
+        System.out.print(".");
+        Thread.sleep(500);
+        System.out.print(".");
+        Thread.sleep(500);
+        System.out.println(".");
+    }
     private void loadListOfNames() {
-        // TODO: Implement load of the names list from a file
-        System.out.println("NOT IMPLEMENTED");
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the filename you want to load from: ");
+        String filename = scanner.nextLine().trim();
+
+        try {
+            Scanner loader = new Scanner(new File(filename));
+            String name = "-nothing yet-";
+            while (!name.isBlank() && loader.hasNextLine()) {
+                name = loader.nextLine();
+                if (!name.isBlank())
+                    names.add(name);
+
+            }
+            loadingtext("Loading");
+            System.out.println(names.size() + " names loaded from file.");
+            System.out.println("\u2500".repeat(50) + " ");
+        }
+        catch(FileNotFoundException e) {
+            System.out.println("File not found");
+            loadListOfNames();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void displayListOfNames() {
-        for(String name : names) {
+
+        for (String name : names) {
             System.out.println(name);
         }
         String isAre = "are";
         String s = "s";
-        if(names.size() == 1) {
+        if (names.size() == 1) {
             isAre = "is";
             s = "";
         }
-        System.out.println("There " + isAre + " " + names.size() + " name"+s+" in the system");
+        System.out.println("There " + isAre + " " + names.size() + " name" + s + " in the system");
+        System.out.println("\u2500".repeat(50) + " ");
+
     }
 
     private void exit() {
@@ -92,7 +147,8 @@ public class NamesList {
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
+
         NamesList app = new NamesList();
         app.startUserInterface();
     }
